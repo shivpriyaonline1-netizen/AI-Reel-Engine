@@ -4,6 +4,8 @@ const router = express.Router();
 
 const renderController = require("../controllers/renderController");
 
+const queueRoutes = require("./queueRoutes");
+
 router.get("/", (req, res) => {
 
     res.json({
@@ -14,5 +16,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/render", renderController.render);
+
+router.use("/queue", queueRoutes);
 
 module.exports = router;
