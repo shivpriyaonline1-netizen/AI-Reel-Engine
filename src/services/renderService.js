@@ -14,7 +14,7 @@ exports.start = async (data) => {
     }
 
     fs.writeFileSync(
-        path.join(jobDir, "job.json"),
+        path.join(jobDir, "content.json"),
         JSON.stringify(data, null, 4)
     );
 

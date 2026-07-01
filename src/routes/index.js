@@ -6,6 +6,8 @@ const renderController = require("../controllers/renderController");
 
 const queueRoutes = require("./queueRoutes");
 
+const contentRoutes = require("./contentRoutes");
+
 router.get("/", (req, res) => {
 
     res.json({
@@ -18,5 +20,7 @@ router.get("/", (req, res) => {
 router.post("/render", renderController.render);
 
 router.use("/queue", queueRoutes);
+
+router.use("/content", contentRoutes);
 
 module.exports = router;
