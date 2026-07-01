@@ -2,7 +2,7 @@ const renderHtml = require("../renderer/renderHtml");
 
 const fs = require("fs");
 const path = require("path");
-const playwright = require("../renderer/playwright");
+const puppeteer = require("../renderer/puppeteer");
 
 exports.start = async (data) => {
 
@@ -26,7 +26,7 @@ fs.writeFileSync(
     html
 );
 
-await playwright.capture(
+await puppeteer.capture(
     path.join(jobDir, "index.html"),
     path.join(jobDir, "frame.png")
 );
