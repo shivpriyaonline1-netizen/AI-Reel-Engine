@@ -2,8 +2,9 @@ const renderHtml = require("../renderer/renderHtml");
 
 const fs = require("fs");
 const path = require("path");
+const playwright = require("../renderer/playwright");
 
-exports.start = (data) => {
+exports.start = async (data) => {
 
     const jobId = data.id;
 
@@ -23,6 +24,11 @@ exports.start = (data) => {
 fs.writeFileSync(
     path.join(jobDir, "index.html"),
     html
+);
+
+await playwright.capture(
+    path.join(jobDir, "index.html"),
+    path.join(jobDir, "frame.png")
 );
 
     return {
