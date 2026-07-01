@@ -1,14 +1,13 @@
-const renderHtml = require("../renderer/renderHtml");
-
 const fs = require("fs");
 const path = require("path");
-const puppeteer = require("../renderer/puppeteer");
+
+const queueService = require("../queue/queueService");
 
 exports.start = async (data) => {
 
     const jobId = data.id;
 
-    const jobDir = path.join(__dirname, "../../output", String(jobId));
+    const jobDir = path.join(process.cwd(), "output", String(jobId));
 
     if (!fs.existsSync(jobDir)) {
         fs.mkdirSync(jobDir, { recursive: true });
@@ -19,22 +18,12 @@ exports.start = async (data) => {
         JSON.stringify(data, null, 4)
     );
 
-    const html = renderHtml.build(data);
-
-fs.writeFileSync(
-    path.join(jobDir, "index.html"),
-    html
-);
-
-await puppeteer.capture(
-    path.join(jobDir, "index.html"),
-    path.join(jobDir, "frame.png")
-);
+    queueService.add(data);
 
     return {
         success: true,
         job: jobId,
-        message: "GitHub Auto Deploy Working"
+        message: "Job Queued Successfully"
     };
 
 };
