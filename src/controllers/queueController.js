@@ -24,6 +24,13 @@ exports.list = (req, res) => {
 
     }
 
+    // FIFO (oldest first)
+    jobs.sort((a, b) =>
+
+        new Date(a.created_at) - new Date(b.created_at)
+
+    );
+
     res.json(jobs);
 
 };
