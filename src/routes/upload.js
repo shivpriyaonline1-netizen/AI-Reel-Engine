@@ -82,6 +82,12 @@ router.post(
 
     (req, res) => {
 
+        console.log("📤 Upload Request");
+
+console.log(req.body);
+
+console.log(req.file);
+
         res.json({
 
             success: true,
