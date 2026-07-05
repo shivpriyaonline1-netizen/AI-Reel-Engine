@@ -6,4 +6,9 @@ const queueController = require("../controllers/queueController");
 
 router.get("/", queueController.list);
 
+router.post(
+    "/start/:id",
+    queueController.start
+);
+
 module.exports = router;

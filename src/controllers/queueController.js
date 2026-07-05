@@ -3,7 +3,15 @@ const path = require("path");
 
 exports.list = (req, res) => {
 
-    const dir = path.join(process.cwd(), "queue");
+    const dir = path.join(
+
+    process.cwd(),
+
+    "queue",
+
+    "pending"
+
+);
 
     const jobs = [];
 
@@ -32,5 +40,61 @@ exports.list = (req, res) => {
     );
 
     res.json(jobs);
+
+};
+
+exports.start = (req, res) => {
+
+    const id = req.params.id;
+
+    const pending = path.join(
+
+        process.cwd(),
+
+        "queue",
+
+        "pending",
+
+        `${id}.json`
+
+    );
+
+    const processing = path.join(
+
+        process.cwd(),
+
+        "queue",
+
+        "processing",
+
+        `${id}.json`
+
+    );
+
+    if (!fs.existsSync(pending)) {
+
+        return res.status(404).json({
+
+            success: false,
+
+            message: "Job not found"
+
+        });
+
+    }
+
+    fs.renameSync(
+
+        pending,
+
+        processing
+
+    );
+
+    res.json({
+
+        success: true
+
+    });
 
 };
