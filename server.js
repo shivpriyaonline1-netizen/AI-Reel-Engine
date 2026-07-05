@@ -9,6 +9,15 @@ const routes = require("./src/routes");
 const app = express();
 
 app.use(express.json());
+app.use(
+    "/videos",
+    express.static(
+        path.join(__dirname, "public/videos")
+    )
+);
+
+app.use("/", uploadRoute);
+
 app.use("/", routes);
 
 const PORT = process.env.PORT || 5000;

@@ -1,4 +1,7 @@
 const express = require("express");
+
+console.log("✅ Upload Route Loaded");
+
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
