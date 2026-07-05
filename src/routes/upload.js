@@ -62,6 +62,18 @@ const upload = multer({
 
 });
 
+router.get("/upload-video", (req, res) => {
+
+    res.json({
+
+        success: true,
+
+        message: "Upload Route Working"
+
+    });
+
+});
+
 router.post(
 
     "/upload-video",
