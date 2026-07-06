@@ -23,4 +23,6 @@ router.use("/queue", queueRoutes);
 
 router.use("/content", contentRoutes);
 
+const dashboardRoutes = require("./dashboard");
+
 module.exports = router;
