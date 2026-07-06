@@ -12,4 +12,9 @@ router.post("/complete/:id", queueController.complete);
 
 router.post("/fail/:id", queueController.fail);
 
+router.post(
+    "/retry/:id",
+    queueController.retry
+);
+
 module.exports = router;

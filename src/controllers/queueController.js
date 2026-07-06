@@ -185,3 +185,17 @@ exports.fail = (req, res) => {
     });
 
 };
+
+const retryWorker = require("../services/retryWorker");
+
+exports.retry = (req, res) => {
+
+    const result = retryWorker.start(
+
+        req.params.id
+
+    );
+
+    res.json(result);
+
+};
