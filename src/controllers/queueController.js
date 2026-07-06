@@ -98,3 +98,147 @@ exports.start = (req, res) => {
     });
 
 };
+
+exports.complete = (req, res) => {
+
+    const id = req.params.id;
+
+    const processing = path.join(
+
+        process.cwd(),
+
+        "queue",
+
+        "processing",
+
+        `${id}.json`
+
+    );
+
+    const completedDir = path.join(
+
+        process.cwd(),
+
+        "queue",
+
+        "completed"
+
+    );
+
+    if (!fs.existsSync(completedDir)) {
+
+        fs.mkdirSync(completedDir, {
+
+            recursive: true
+
+        });
+
+    }
+
+    const completed = path.join(
+
+        completedDir,
+
+        `${id}.json`
+
+    );
+
+    if (!fs.existsSync(processing)) {
+
+        return res.status(404).json({
+
+            success: false,
+
+            message: "Job not found"
+
+        });
+
+    }
+
+    fs.renameSync(
+
+        processing,
+
+        completed
+
+    );
+
+    res.json({
+
+        success: true
+
+    });
+
+};
+
+exports.fail = (req, res) => {
+
+    const id = req.params.id;
+
+    const processing = path.join(
+
+        process.cwd(),
+
+        "queue",
+
+        "processing",
+
+        `${id}.json`
+
+    );
+
+    const failedDir = path.join(
+
+        process.cwd(),
+
+        "queue",
+
+        "failed"
+
+    );
+
+    if (!fs.existsSync(failedDir)) {
+
+        fs.mkdirSync(failedDir, {
+
+            recursive: true
+
+        });
+
+    }
+
+    const failed = path.join(
+
+        failedDir,
+
+        `${id}.json`
+
+    );
+
+    if (!fs.existsSync(processing)) {
+
+        return res.status(404).json({
+
+            success: false,
+
+            message: "Job not found"
+
+        });
+
+    }
+
+    fs.renameSync(
+
+        processing,
+
+        failed
+
+    );
+
+    res.json({
+
+        success: true
+
+    });
+
+};
