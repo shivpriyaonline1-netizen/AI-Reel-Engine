@@ -8,6 +8,8 @@ const queueRoutes = require("./queueRoutes");
 
 const contentRoutes = require("./contentRoutes");
 
+const dashboardRoutes = require("./dashboard");
+
 router.get("/", (req, res) => {
 
     res.json({
@@ -23,6 +25,6 @@ router.use("/queue", queueRoutes);
 
 router.use("/content", contentRoutes);
 
-const dashboardRoutes = require("./dashboard");
+router.use("/", dashboardRoutes);
 
 module.exports = router;
