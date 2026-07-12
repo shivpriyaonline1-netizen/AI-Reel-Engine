@@ -1,7 +1,11 @@
 const fs = require("fs");
 const path = require("path");
+let lastRendererContact = null;
 
 exports.list = (req, res) => {
+
+    lastRendererContact = Date.now();
+    console.log("Renderer Connected :", new Date().toLocaleTimeString());
 
     const dir = path.join(
         process.cwd(),
@@ -197,5 +201,40 @@ exports.retry = (req, res) => {
     );
 
     res.json(result);
+
+};
+
+exports.getLastRendererContact = () => {
+    return lastRendererContact;
+};
+
+exports.stats = () => {
+
+    const count = (folder) => {
+
+        const dir = path.join(
+            process.cwd(),
+            "queue",
+            folder
+        );
+
+        if (!fs.existsSync(dir)) {
+            return 0;
+        }
+
+        return fs.readdirSync(dir)
+            .filter(file => file.endsWith(".json"))
+            .length;
+
+    };
+
+    return {
+
+        pending: count("pending"),
+        processing: count("processing"),
+        completed: count("completed"),
+        failed: count("failed")
+
+    };
 
 };

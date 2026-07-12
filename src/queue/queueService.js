@@ -27,3 +27,31 @@ exports.add = (job) => {
     );
 
 };
+
+function count(dir) {
+
+    if (!fs.existsSync(dir)) {
+        return 0;
+    }
+
+    return fs.readdirSync(dir)
+        .filter(file => file.endsWith(".json"))
+        .length;
+
+}
+
+exports.stats = () => {
+
+    return {
+
+        pending: count(path.join(process.cwd(), "queue", "pending")),
+
+        processing: count(path.join(process.cwd(), "queue", "processing")),
+
+        completed: count(path.join(process.cwd(), "queue", "completed")),
+
+        failed: count(path.join(process.cwd(), "queue", "failed"))
+
+    };
+
+};
