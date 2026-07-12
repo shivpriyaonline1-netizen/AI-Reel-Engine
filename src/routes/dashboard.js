@@ -49,28 +49,54 @@ currentJob: status.currentJob
 
 router.post("/dashboard/job", (req, res) => {
 
-    const statusFile = path.join(
-        process.cwd(),
-        "storage",
-        "status.json"
-    );
+    try {
 
-    let status = JSON.parse(
-        fs.readFileSync(statusFile, "utf8")
-    );
+        const statusFile = path.join(
+            process.cwd(),
+            "storage",
+            "status.json"
+        );
 
-    status.currentJob.id = req.body.id;
-    status.currentJob.stage = req.body.stage;
-    status.currentJob.startedAt = req.body.startedAt;
+        console.log("Status File :", statusFile);
 
-    fs.writeFileSync(
-        statusFile,
-        JSON.stringify(status, null, 4)
-    );
+        const raw = fs.readFileSync(statusFile, "utf8");
+        console.log("RAW :", raw);
 
-    res.json({
-        success: true
-    });
+        let status = JSON.parse(raw);
+
+        if (!status.currentJob) {
+            status.currentJob = {
+                id: null,
+                title: null,
+                stage: "Idle",
+                startedAt: null
+            };
+        }
+
+        status.currentJob.id = req.body.id;
+        status.currentJob.stage = req.body.stage;
+        status.currentJob.startedAt = req.body.startedAt;
+
+        fs.writeFileSync(
+            statusFile,
+            JSON.stringify(status, null, 4)
+        );
+
+        res.json({
+            success: true
+        });
+
+    } catch (e) {
+
+        console.error("Dashboard Job Error:");
+        console.error(e);
+
+        res.status(500).json({
+            success: false,
+            message: e.message
+        });
+
+    }
 
 });
 
