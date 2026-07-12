@@ -6,6 +6,11 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
+const axios = require("axios");
+const FormData = require("form-data");
+
+const WP = "https://shivpriyaonline.com/wp-json/arg/v1/upload";
+
 const router = express.Router();
 
 const uploadDir = path.join(
@@ -80,7 +85,7 @@ router.post(
 
     upload.single("video"),
 
-    (req, res) => {
+    async (req, res) => {
 
         console.log("📤 Upload Request");
 
@@ -88,14 +93,39 @@ console.log(req.body);
 
 console.log(req.file);
 
-        res.json({
+const form = new FormData();
 
-            success: true,
+form.append("post_id", req.body.jobId);
 
-            url:
-`https://khaki-woodpecker-407380.hostingersite.com/videos/${req.body.jobId}.mp4`
+form.append(
+    "video",
+    fs.createReadStream(req.file.path),
+    req.file.filename
+);
 
-        });
+const wp = await axios.post(
+
+    WP,
+
+    form,
+
+    {
+
+        headers: form.getHeaders(),
+
+        maxBodyLength: Infinity,
+
+        maxContentLength: Infinity
+
+    }
+
+);
+
+console.log("✅ WordPress Upload Complete");
+
+console.log(wp.data);
+
+return res.json(wp.data);
 
     }
 
