@@ -1,0 +1,10 @@
+{
+    "engine": {
+        "status": "Running",
+        "startedAt": null
+    },
+    "renderer": {
+        "online": false,
+        "lastSeen": null
+    }
+}

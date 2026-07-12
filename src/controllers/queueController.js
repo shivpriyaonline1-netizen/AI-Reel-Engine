@@ -1,10 +1,29 @@
 const fs = require("fs");
 const path = require("path");
+const STATUS_FILE = path.join(
+    process.cwd(),
+    "storage",
+    "status.json"
+);
 let lastRendererContact = null;
 
 exports.list = (req, res) => {
 
     lastRendererContact = Date.now();
+
+    fs.writeFileSync(
+    STATUS_FILE,
+    JSON.stringify({
+        engine: {
+            status: "Running"
+        },
+        renderer: {
+            online: true,
+            lastSeen: new Date().toISOString()
+        }
+    }, null, 4)
+);
+
     console.log("Renderer Connected :", new Date().toLocaleTimeString());
 
     const dir = path.join(
