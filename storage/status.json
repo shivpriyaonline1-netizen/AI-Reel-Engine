@@ -6,5 +6,11 @@
     "renderer": {
         "online": false,
         "lastSeen": null
+    },
+    "currentJob": {
+        "id": null,
+        "title": null,
+        "stage": "Idle",
+        "startedAt": null
     }
 }

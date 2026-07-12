@@ -40,8 +40,36 @@ try {
         queue: stats.pending + stats.processing,
         renderers: status.renderer.online ? 1 : 0,
 renderer_status: status.renderer.online ? "Online" : "Offline",
-heartbeat: status.renderer.lastSeen
+heartbeat: status.renderer.lastSeen,
+currentJob: status.currentJob
 
+    });
+
+});
+
+router.post("/dashboard/job", (req, res) => {
+
+    const statusFile = path.join(
+        process.cwd(),
+        "storage",
+        "status.json"
+    );
+
+    let status = JSON.parse(
+        fs.readFileSync(statusFile, "utf8")
+    );
+
+    status.currentJob.id = req.body.id;
+    status.currentJob.stage = req.body.stage;
+    status.currentJob.startedAt = req.body.startedAt;
+
+    fs.writeFileSync(
+        statusFile,
+        JSON.stringify(status, null, 4)
+    );
+
+    res.json({
+        success: true
     });
 
 });
