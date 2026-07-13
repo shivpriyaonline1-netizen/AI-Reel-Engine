@@ -93,6 +93,8 @@ console.log(req.body);
 
 console.log(req.file);
 
+if (!req.file) return res.status(400).json({ success: false, error: "No file received by Engine" });
+
 const form = new FormData();
 
 form.append("post_id", req.body.jobId);
@@ -102,6 +104,8 @@ form.append(
     fs.createReadStream(req.file.path),
     req.file.filename
 );
+
+console.log("Forwarding File :", req.file.path);
 
 const wp = await axios.post(
 
