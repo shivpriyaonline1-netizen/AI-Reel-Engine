@@ -10,6 +10,7 @@ const axios = require("axios");
 const FormData = require("form-data");
 
 const WP = "https://shivpriyaonline.com/wp-json/arg/v1/upload";
+const API_KEY = "S9vd9ssmrvEySakIhzNQHHyFmmnPyD9s1C07swo5PBHonMzNoCVVnFO40wFZNYSg";
 
 const router = express.Router();
 
@@ -115,7 +116,13 @@ const wp = await axios.post(
 
     {
 
-        headers: form.getHeaders(),
+        headers: {
+
+    ...form.getHeaders(),
+
+    "X-ARG-Key": API_KEY
+
+},
 
         maxBodyLength: Infinity,
 
