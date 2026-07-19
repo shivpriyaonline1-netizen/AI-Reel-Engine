@@ -1,3 +1,7 @@
 node_modules/
 .env
 output/
+queue/
+storage/status.json
+public/videos/
+logs/

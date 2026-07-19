@@ -65,16 +65,18 @@ router.post("/dashboard/job", (req, res) => {
         let status = JSON.parse(raw);
 
         if (!status.currentJob) {
-            status.currentJob = {
-                id: null,
-                title: null,
-                stage: "Idle",
-                startedAt: null
-            };
-        }
+    status.currentJob = {
+        id: null,
+        title: null,
+        stage: "Idle",
+        progress: 0,
+        startedAt: null
+    };
+}
 
         status.currentJob.id = req.body.id;
         status.currentJob.stage = req.body.stage;
+        status.currentJob.progress = req.body.progress ?? 0;
         status.currentJob.startedAt = req.body.startedAt;
 
         fs.writeFileSync(
