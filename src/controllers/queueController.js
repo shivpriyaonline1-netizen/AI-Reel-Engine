@@ -1,5 +1,8 @@
 const fs = require("fs");
 const path = require("path");
+
+const axios = require("axios");
+
 const STATUS_FILE = path.join(
     process.cwd(),
     "storage",
@@ -7,205 +10,111 @@ const STATUS_FILE = path.join(
 );
 let lastRendererContact = null;
 
-exports.list = (req, res) => {
+exports.list = async (req, res) => {
 
-    lastRendererContact = Date.now();
+    try {
 
-    fs.writeFileSync(
-    STATUS_FILE,
-    JSON.stringify({
-        engine: {
-            status: "Running"
-        },
-        renderer: {
-            online: true,
-            lastSeen: new Date().toISOString()
+        const response = await axios.get(
+            "https://shivpriyaonline.com/wp-json/arg/v1/render/next"
+        );
+
+        if (
+            !response.data ||
+            !response.data.success
+        ) {
+            return res.json([]);
         }
-    }, null, 4)
-);
 
-    console.log("Renderer Connected :", new Date().toLocaleTimeString());
+        return res.json([response.data.job]);
 
-    const dir = path.join(
-        process.cwd(),
-        "queue",
-        "pending"
-    );
+    } catch (err) {
 
-    const jobs = [];
+        console.error("Queue Error:", err.message);
 
-    if (fs.existsSync(dir)) {
-
-        fs.readdirSync(dir).forEach(file => {
-
-            const job = JSON.parse(
-                fs.readFileSync(
-                    path.join(dir, file),
-                    "utf8"
-                )
-            );
-
-            jobs.push(job);
-
-        });
+        return res.json([]);
 
     }
-
-    jobs.sort((a, b) =>
-        new Date(a.created_at) - new Date(b.created_at)
-    );
-
-    res.json(jobs);
 
 };
 
-exports.start = (req, res) => {
+exports.start = async (req, res) => {
 
-    const id = req.params.id;
+    try {
 
-    const pending = path.join(
-        process.cwd(),
-        "queue",
-        "pending",
-        `${id}.json`
-    );
+        const id = req.params.id;
 
-    const processingDir = path.join(
-        process.cwd(),
-        "queue",
-        "processing"
-    );
+        await axios.post(
+            `https://shivpriyaonline.com/wp-json/arg/v1/queue/start/${id}`
+        );
 
-    if (!fs.existsSync(processingDir)) {
-
-        fs.mkdirSync(processingDir, {
-            recursive: true
+        res.json({
+            success: true
         });
 
-    }
+    } catch (err) {
 
-    const processing = path.join(
-        processingDir,
-        `${id}.json`
-    );
+        console.error("Start Error:", err.message);
 
-    if (!fs.existsSync(pending)) {
-
-        return res.status(404).json({
+        res.status(500).json({
             success: false,
-            message: "Job not found"
+            message: err.message
         });
 
     }
-
-    fs.renameSync(
-        pending,
-        processing
-    );
-
-    res.json({
-        success: true
-    });
 
 };
 
-exports.complete = (req, res) => {
+exports.complete = async (req, res) => {
 
-    const id = req.params.id;
+    try {
 
-    const processing = path.join(
-        process.cwd(),
-        "queue",
-        "processing",
-        `${id}.json`
-    );
+        const id = req.params.id;
 
-    const completedDir = path.join(
-        process.cwd(),
-        "queue",
-        "completed"
-    );
+        await axios.post(
+            `https://shivpriyaonline.com/wp-json/arg/v1/queue/complete/${id}`
+        );
 
-    if (!fs.existsSync(completedDir)) {
-
-        fs.mkdirSync(completedDir, {
-            recursive: true
+        res.json({
+            success: true
         });
 
-    }
+    } catch (err) {
 
-    const completed = path.join(
-        completedDir,
-        `${id}.json`
-    );
+        console.error("Complete Error:", err.message);
 
-    if (!fs.existsSync(processing)) {
-
-        return res.status(404).json({
+        res.status(500).json({
             success: false,
-            message: "Job not found"
+            message: err.message
         });
 
     }
-
-    fs.renameSync(
-        processing,
-        completed
-    );
-
-    res.json({
-        success: true
-    });
 
 };
 
-exports.fail = (req, res) => {
+exports.fail = async (req, res) => {
 
-    const id = req.params.id;
+    try {
 
-    const processing = path.join(
-        process.cwd(),
-        "queue",
-        "processing",
-        `${id}.json`
-    );
+        const id = req.params.id;
 
-    const failedDir = path.join(
-        process.cwd(),
-        "queue",
-        "failed"
-    );
+        await axios.post(
+            `https://shivpriyaonline.com/wp-json/arg/v1/queue/fail/${id}`
+        );
 
-    if (!fs.existsSync(failedDir)) {
-
-        fs.mkdirSync(failedDir, {
-            recursive: true
+        res.json({
+            success: true
         });
 
-    }
+    } catch (err) {
 
-    const failed = path.join(
-        failedDir,
-        `${id}.json`
-    );
+        console.error("Fail Error:", err.message);
 
-    if (!fs.existsSync(processing)) {
-
-        return res.status(404).json({
+        res.status(500).json({
             success: false,
-            message: "Job not found"
+            message: err.message
         });
 
     }
-
-    fs.renameSync(
-        processing,
-        failed
-    );
-
-    res.json({
-        success: true
-    });
 
 };
 
@@ -227,33 +136,32 @@ exports.getLastRendererContact = () => {
     return lastRendererContact;
 };
 
-exports.stats = () => {
+exports.stats = async () => {
 
-    const count = (folder) => {
+    try {
 
-        const dir = path.join(
-            process.cwd(),
-            "queue",
-            folder
+        const response = await axios.get(
+            "https://shivpriyaonline.com/wp-json/arg/v1/render/stats"
         );
 
-        if (!fs.existsSync(dir)) {
-            return 0;
+        if (
+            response.data &&
+            response.data.success
+        ) {
+            return response.data.stats;
         }
 
-        return fs.readdirSync(dir)
-            .filter(file => file.endsWith(".json"))
-            .length;
+    } catch (err) {
 
-    };
+        console.error("Stats Error:", err.message);
+
+    }
 
     return {
-
-        pending: count("pending"),
-        processing: count("processing"),
-        completed: count("completed"),
-        failed: count("failed")
-
+        waiting: 0,
+        processing: 0,
+        completed: 0,
+        failed: 0
     };
 
 };
