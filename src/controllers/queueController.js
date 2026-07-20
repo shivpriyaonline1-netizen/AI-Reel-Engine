@@ -29,11 +29,17 @@ exports.list = async (req, res) => {
 
     } catch (err) {
 
-        console.error("Queue Error:", err.message);
+    console.log("========== QUEUE ERROR ==========");
+    console.log("Message :", err.message);
+    console.log("Status  :", err.response?.status);
+    console.log("URL     :", err.config?.url);
+    console.log("Method  :", err.config?.method);
+    console.log("Body    :", err.response?.data);
+    console.log("=================================");
 
-        return res.json([]);
+    return res.json([]);
 
-    }
+}
 
 };
 
