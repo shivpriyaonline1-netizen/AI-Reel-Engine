@@ -1,6 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 
+const cleanupService = require("../services/cleanupService");
+
+console.log("cleanupService =", cleanupService);
+
 const axios = require("axios");
 
 const STATUS_FILE = path.join(
