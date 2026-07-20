@@ -25,7 +25,29 @@ exports.list = async (req, res) => {
             return res.json([]);
         }
 
-        return res.json([response.data.job]);
+        console.log("======================================");
+console.log("[WP -> ENGINE] JOB RECEIVED");
+
+if (response.data.job) {
+    console.log("Job ID   :", response.data.job.id);
+    console.log("Post ID  :", response.data.job.post_id);
+    console.log("Status   :", response.data.job.status);
+} else {
+    console.log("No Job Returned");
+}
+
+console.log("Time     :", new Date().toISOString());
+console.log("======================================");
+
+        console.log("======================================");
+console.log("[ENGINE -> RENDERER] JOB SENT");
+console.log("Job ID   :", response.data.job.id);
+console.log("Post ID  :", response.data.job.post_id);
+console.log("Status   :", response.data.job.status);
+console.log("Time     :", new Date().toISOString());
+console.log("======================================");
+
+return res.json([response.data.job]);
 
     } catch (err) {
 
@@ -76,9 +98,29 @@ exports.complete = async (req, res) => {
 
         const id = req.params.id;
 
+        console.log("======================================");
+console.log("[RENDERER -> ENGINE] COMPLETE RECEIVED");
+console.log("Job ID   :", id);
+console.log("Time     :", new Date().toISOString());
+console.log("======================================");
+
+console.log("======================================");
+console.log("[ENGINE -> WORDPRESS] COMPLETE REQUEST");
+console.log("Job ID   :", id);
+console.log("URL      :", `https://shivpriyaonline.com/wp-json/arg/v1/queue/complete/${id}`);
+console.log("Time     :", new Date().toISOString());
+console.log("======================================");
+
         await axios.post(
             `https://shivpriyaonline.com/wp-json/arg/v1/queue/complete/${id}`
         );
+
+        console.log("======================================");
+console.log("[WORDPRESS RESPONSE]");
+console.log("Job ID   :", id);
+console.log("Status   : COMPLETE ACCEPTED");
+console.log("Time     :", new Date().toISOString());
+console.log("======================================");
 
         res.json({
             success: true
