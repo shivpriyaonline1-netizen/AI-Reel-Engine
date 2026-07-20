@@ -122,6 +122,8 @@ console.log("Status   : COMPLETE ACCEPTED");
 console.log("Time     :", new Date().toISOString());
 console.log("======================================");
 
+cleanupService.remove(req.params.id);
+
         res.json({
             success: true
         });
