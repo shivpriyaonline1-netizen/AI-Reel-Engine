@@ -18,7 +18,7 @@ exports.start = async (data) => {
         JSON.stringify(data, null, 4)
     );
 
-    // queueService.add(data);
+    queueService.add(data);
 
     return {
         success: true,
