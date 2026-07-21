@@ -78,6 +78,12 @@ console.log("======================================");
 
 renderService.clear();
 
+console.log("======================================");
+console.log("[QUEUE CONTROLLER] CLEAR CALLED");
+console.log("Job ID :", id);
+console.log("Time   :", new Date().toISOString());
+console.log("======================================");
+
         console.log("======================================");
 console.log("[WORDPRESS RESPONSE]");
 console.log("Job ID   :", id);
