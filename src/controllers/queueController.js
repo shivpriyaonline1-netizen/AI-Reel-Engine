@@ -2,11 +2,14 @@ const renderService = require("../services/renderService");
 
 const axios = require("axios");
 
-let lastRendererContact = null;
-
 exports.list = async (req, res) => {
 
     try {
+
+        // Renderer busy hai
+        if (renderService.get()) {
+            return res.json([]);
+        }
 
         const response = await axios.get(
             "https://shivpriyaonline.com/wp-json/arg/v1/render/next"
@@ -14,73 +17,30 @@ exports.list = async (req, res) => {
 
         if (
             !response.data ||
-            !response.data.success
+            !response.data.success ||
+            !response.data.job
         ) {
             return res.json([]);
         }
 
-        console.log("======================================");
-console.log("[WP -> ENGINE] JOB RECEIVED");
-
-if (response.data.job) {
-    console.log("Job ID   :", response.data.job.id);
-    console.log("Post ID  :", response.data.job.post_id);
-    console.log("Status   :", response.data.job.status);
-} else {
-    console.log("No Job Returned");
-}
-
-console.log("Time     :", new Date().toISOString());
-console.log("======================================");
+        renderService.start(response.data.job);
 
         console.log("======================================");
-console.log("[ENGINE -> RENDERER] JOB SENT");
-console.log("Job ID   :", response.data.job.id);
-console.log("Post ID  :", response.data.job.post_id);
-console.log("Status   :", response.data.job.status);
-console.log("Time     :", new Date().toISOString());
-console.log("======================================");
+        console.log("[WP -> ENGINE] JOB RECEIVED");
+        console.log("Job ID   :", response.data.job.id);
+        console.log("Post ID  :", response.data.job.post_id);
+        console.log("Status   :", response.data.job.status);
+        console.log("Time     :", new Date().toISOString());
+        console.log("======================================");
 
-return res.json([response.data.job]);
+        return res.json([response.data.job]);
 
     } catch (err) {
 
-    console.log("========== QUEUE ERROR ==========");
-    console.log("Message :", err.message);
-    console.log("Status  :", err.response?.status);
-    console.log("URL     :", err.config?.url);
-    console.log("Method  :", err.config?.method);
-    console.log("Body    :", err.response?.data);
-    console.log("=================================");
+        console.log("========== QUEUE ERROR ==========");
+        console.log(err.message);
 
-    return res.json([]);
-
-}
-
-};
-
-exports.start = async (req, res) => {
-
-    try {
-
-        const id = req.params.id;
-
-        await axios.post(
-            `https://shivpriyaonline.com/wp-json/arg/v1/queue/start/${id}`
-        );
-
-        res.json({
-            success: true
-        });
-
-    } catch (err) {
-
-        console.error("Start Error:", err.message);
-
-        res.status(500).json({
-            success: false,
-            message: err.message
-        });
+        return res.json([]);
 
     }
 
@@ -181,10 +141,6 @@ exports.retry = (req, res) => {
 
     res.json(result);
 
-};
-
-exports.getLastRendererContact = () => {
-    return lastRendererContact;
 };
 
 exports.stats = async () => {
