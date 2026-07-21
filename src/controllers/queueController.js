@@ -100,7 +100,9 @@ exports.complete = async (req, res) => {
 
     try {
 
-        const id = req.params.id;
+        const body = req.body || {};
+
+const postId = Number(body.post_id || 0);
 
         console.log("======================================");
 console.log("[RENDERER -> ENGINE] COMPLETE RECEIVED");
@@ -126,7 +128,9 @@ console.log("Status   : COMPLETE ACCEPTED");
 console.log("Time     :", new Date().toISOString());
 console.log("======================================");
 
-cleanupService.remove(req.params.id);
+if (postId > 0) {
+    cleanupService.remove(postId);
+}
 
         res.json({
             success: true
