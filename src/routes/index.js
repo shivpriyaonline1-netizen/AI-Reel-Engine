@@ -21,8 +21,6 @@ router.get("/", (req, res) => {
 
 router.post("/render", renderController.render);
 
-router.use("/queue", queueRoutes);
-
 router.use("/content", contentRoutes);
 
 router.use("/", dashboardRoutes);

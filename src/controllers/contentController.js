@@ -2,15 +2,13 @@ const renderService = require("../services/renderService");
 
 exports.get = (req, res) => {
 
-    const id = Number(req.params.id);
-
     const content = renderService.get();
 
-    if (!content || Number(content.id) !== id) {
+    if (!content) {
 
         return res.status(404).json({
             success: false,
-            message: "Content Not Found"
+            message: "No Current Job"
         });
 
     }

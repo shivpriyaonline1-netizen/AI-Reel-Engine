@@ -6,6 +6,6 @@ const contentController = require("../controllers/contentController");
 
 console.log("CONTENT ROUTES LOADED");
 
-router.get("/:id", contentController.get);
+router.get("/", contentController.get);
 
 module.exports = router;
