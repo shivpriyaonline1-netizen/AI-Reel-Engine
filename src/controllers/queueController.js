@@ -1,17 +1,5 @@
-const fs = require("fs");
-const path = require("path");
-
-const cleanupService = require("../services/cleanupService");
-
-console.log("cleanupService =", cleanupService);
-
 const axios = require("axios");
 
-const STATUS_FILE = path.join(
-    process.cwd(),
-    "storage",
-    "status.json"
-);
 let lastRendererContact = null;
 
 exports.list = async (req, res) => {
@@ -100,6 +88,8 @@ exports.complete = async (req, res) => {
 
     try {
 
+        const id = req.params.id;
+
         const body = req.body || {};
 
 const postId = Number(body.post_id || 0);
@@ -118,8 +108,11 @@ console.log("Time     :", new Date().toISOString());
 console.log("======================================");
 
         await axios.post(
-            `https://shivpriyaonline.com/wp-json/arg/v1/queue/complete/${id}`
-        );
+    `https://shivpriyaonline.com/wp-json/arg/v1/queue/complete/${id}`,
+    {
+        post_id: postId
+    }
+);
 
         console.log("======================================");
 console.log("[WORDPRESS RESPONSE]");
@@ -127,10 +120,6 @@ console.log("Job ID   :", id);
 console.log("Status   : COMPLETE ACCEPTED");
 console.log("Time     :", new Date().toISOString());
 console.log("======================================");
-
-if (postId > 0) {
-    cleanupService.remove(postId);
-}
 
         res.json({
             success: true
