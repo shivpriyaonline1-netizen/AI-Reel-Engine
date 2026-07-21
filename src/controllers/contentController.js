@@ -1,18 +1,12 @@
-const fs = require("fs");
-const path = require("path");
+const renderService = require("../services/renderService");
 
 exports.get = (req, res) => {
 
-    const id = req.params.id;
+    const id = Number(req.params.id);
 
-    const file = path.join(
-        process.cwd(),
-        "output",
-        id,
-        "content.json"
-    );
+    const content = renderService.get();
 
-    if (!fs.existsSync(file)) {
+    if (!content || Number(content.id) !== id) {
 
         return res.status(404).json({
             success: false,
@@ -20,10 +14,6 @@ exports.get = (req, res) => {
         });
 
     }
-
-    const content = JSON.parse(
-        fs.readFileSync(file, "utf8")
-    );
 
     res.json(content);
 

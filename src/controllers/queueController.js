@@ -1,3 +1,5 @@
+const renderService = require("../services/renderService");
+
 const axios = require("axios");
 
 let lastRendererContact = null;
@@ -113,6 +115,8 @@ console.log("======================================");
         post_id: postId
     }
 );
+
+renderService.clear();
 
         console.log("======================================");
 console.log("[WORDPRESS RESPONSE]");
