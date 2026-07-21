@@ -46,6 +46,37 @@ exports.list = async (req, res) => {
 
 };
 
+exports.start = async (req, res) => {
+
+    try {
+
+        const id = req.params.id;
+
+        console.log("======================================");
+        console.log("[QUEUE START]");
+        console.log("Job ID :", id);
+        console.log("Time   :", new Date().toISOString());
+        console.log("======================================");
+
+        res.json({
+            success: true,
+            job: id,
+            message: "Start accepted"
+        });
+
+    } catch (err) {
+
+        console.error("Start Error:", err.message);
+
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+
+};
+
 exports.complete = async (req, res) => {
 
     try {
