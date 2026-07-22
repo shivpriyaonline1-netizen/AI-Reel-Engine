@@ -9,6 +9,8 @@ console.log("Job ID :", req.body.id);
 console.log("Time   :", new Date().toISOString());
 console.log("======================================");
 
+    console.log("RENDER ROUTE HIT");
+    console.log(req.body);
     const result = await renderService.start(req.body);
 
     res.json({
