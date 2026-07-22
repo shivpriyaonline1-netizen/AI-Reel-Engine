@@ -11,6 +11,8 @@ exports.list = async (req, res) => {
             return res.json([]);
         }
 
+        console.log("RAM BUSY :", renderService.get() ? renderService.get().id : "EMPTY");
+
         const response = await axios.get(
             "https://shivpriyaonline.com/wp-json/arg/v1/render/next"
         );
