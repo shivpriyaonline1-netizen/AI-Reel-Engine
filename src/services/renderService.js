@@ -4,8 +4,7 @@ exports.start = async (data) => {
 
     console.log("======================================");
     console.log("[ENGINE] RAM SET");
-    console.log("Job ID   :", data.id);
-    console.log("Post ID  :", data.post_id);
+    console.log("Job ID :", data.id);
     console.log("Time     :", new Date().toISOString());
      console.log("========== RENDER SERVICE ==========");
     console.log("Source : renderService.start()");

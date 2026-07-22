@@ -18,3 +18,20 @@ console.log("======================================");
     });
 
 };
+
+exports.complete = (req, res) => {
+
+    renderService.clear();
+
+    console.log("======================================");
+    console.log("[RENDER COMPLETE]");
+    console.log("Current Job Cleared");
+    console.log("Time :", new Date().toISOString());
+    console.log("======================================");
+
+    res.json({
+        success: true,
+        message: "Current Job Cleared"
+    });
+
+};

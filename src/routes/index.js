@@ -4,6 +4,8 @@ const router = express.Router();
 
 const renderController = require("../controllers/renderController");
 
+router.post("/render/complete", renderController.complete);
+
 const queueRoutes = require("./queueRoutes");
 
 const contentRoutes = require("./contentRoutes");
