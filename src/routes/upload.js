@@ -1,145 +1,125 @@
 const express = require("express");
-
-console.log("✅ Upload Route Loaded");
-
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-
 const axios = require("axios");
 const FormData = require("form-data");
 
-const WP = "https://shivpriyaonline.com/wp-json/arg/v1/upload";
-const API_KEY = "S9vd9ssmrvEySakIhzNQHHyFmmnPyD9s1C07swo5PBHonMzNoCVVnFO40wFZNYSg";
+const config = require("../config/config");
+
+console.log("✅ Upload Route Loaded");
 
 const router = express.Router();
 
-const uploadDir = path.join(
-
-    __dirname,
-
-    "../../public/videos"
-
-);
+const uploadDir = path.join(__dirname, "../../public/videos");
 
 if (!fs.existsSync(uploadDir)) {
-
     fs.mkdirSync(uploadDir, {
-
         recursive: true
-
     });
-
 }
 
 const storage = multer.diskStorage({
 
     destination(req, file, cb) {
-
-        cb(
-
-            null,
-
-            uploadDir
-
-        );
-
+        cb(null, uploadDir);
     },
 
     filename(req, file, cb) {
-
-        const jobId = req.body.jobId;
-
-        cb(
-
-            null,
-
-            `${jobId}.mp4`
-
-        );
-
+        cb(null, `${req.body.jobId}.mp4`);
     }
 
 });
 
-const upload = multer({
-
-    storage
-
-});
+const upload = multer({ storage });
 
 router.get("/upload-video", (req, res) => {
 
     res.json({
-
         success: true,
-
         message: "Upload Route Working"
-
     });
 
 });
 
-router.post(
+router.post("/upload-video", upload.single("video"), async (req, res) => {
 
-    "/upload-video",
+    try {
 
-    upload.single("video"),
+        console.log("====================================");
+        console.log("[UPLOAD]");
+        console.log("Job ID :", req.body.jobId);
+        console.log("====================================");
 
-    async (req, res) => {
+        if (!req.file) {
 
-        console.log("📤 Upload Request");
+            return res.status(400).json({
+                success: false,
+                message: "No video received"
+            });
 
-console.log(req.body);
+        }
 
-console.log(req.file);
+        const form = new FormData();
 
-if (!req.file) return res.status(400).json({ success: false, error: "No file received by Engine" });
+        form.append("post_id", req.body.jobId);
 
-const form = new FormData();
+        form.append(
+            "video",
+            fs.createReadStream(req.file.path),
+            req.file.filename
+        );
 
-form.append("post_id", req.body.jobId);
+        const wp = await axios.post(
 
-form.append(
-    "video",
-    fs.createReadStream(req.file.path),
-    req.file.filename
-);
+            config.wp.upload,
 
-console.log("Forwarding File :", req.file.path);
+            form,
 
-const wp = await axios.post(
+            {
 
-    WP,
+                headers: {
 
-    form,
+                    ...form.getHeaders(),
 
-    {
+                    "X-ARG-Key": config.wp.apiKey
 
-        headers: {
+                },
 
-    ...form.getHeaders(),
+                maxBodyLength: Infinity,
+                maxContentLength: Infinity
 
-    "X-ARG-Key": API_KEY
+            }
 
-},
+        );
 
-        maxBodyLength: Infinity,
+        console.log("✅ WordPress Upload Complete");
 
-        maxContentLength: Infinity
+        return res.json(wp.data);
+
+    } catch (error) {
+
+        console.error("[UPLOAD ERROR]");
+
+        if (error.response) {
+
+            console.error(error.response.data);
+
+        } else {
+
+            console.error(error.message);
+
+        }
+
+        return res.status(500).json({
+
+            success: false,
+            message: "Upload Failed"
+
+        });
 
     }
 
-);
-
-console.log("✅ WordPress Upload Complete");
-
-console.log(wp.data);
-
-return res.json(wp.data);
-
-    }
-
-);
+});
 
 module.exports = router;

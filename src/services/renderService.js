@@ -1,23 +1,46 @@
-let currentJob = null;
+const fs = require("fs-extra");
+const path = require("path");
+const queueService = require("./queueService");
+
+const STORAGE = process.env.ARG_STORAGE || "C:\\AI-Reel-Storage";
+
+const PENDING = path.join(STORAGE, "queue", "pending");
+const PROCESSING = path.join(STORAGE, "queue", "processing");
 
 exports.start = async (data) => {
 
     console.log("======================================");
-    console.log("[ENGINE] RAM SET");
-    console.log("Job ID :", data.id);
-    console.log("Time     :", new Date().toISOString());
-     console.log("========== RENDER SERVICE ==========");
-    console.log("Source : renderService.start()");
+    console.log("[ENGINE] QUEUE ADD");
     console.log("Job ID :", data.id);
     console.log("Time   :", new Date().toISOString());
-    console.trace("Called From");
-    console.log("====================================");
-
-
-    currentJob = data;
-
-    console.log("RAM Job  :", currentJob ? currentJob.id : "NULL");
     console.log("======================================");
+
+    const pendingFile = path.join(
+        PENDING,
+        `${data.id}.json`
+    );
+
+    const processingFile = path.join(
+        PROCESSING,
+        `${data.id}.json`
+    );
+
+    if (
+        await fs.pathExists(pendingFile) ||
+        await fs.pathExists(processingFile)
+    ) {
+
+        console.log("[ENGINE] Duplicate Job :", data.id);
+
+        return {
+            success: true,
+            job: data.id,
+            message: "Job Already Exists"
+        };
+
+    }
+
+    await queueService.addJob(data);
 
     return {
         success: true,
@@ -27,22 +50,14 @@ exports.start = async (data) => {
 
 };
 
-exports.get = () => {
+exports.get = async () => {
 
-    return currentJob;
+    return await queueService.nextJob();
 
 };
 
-exports.clear = () => {
+exports.clear = async () => {
 
-    console.log("======================================");
-    console.log("[ENGINE] RAM CLEAR");
-    console.log("Before :", currentJob ? currentJob.id : "NULL");
-
-    currentJob = null;
-
-    console.log("After  :", currentJob === null ? "CLEARED" : "NOT CLEARED");
-    console.log("Time   :", new Date().toISOString());
-    console.log("======================================");
+    return true;
 
 };

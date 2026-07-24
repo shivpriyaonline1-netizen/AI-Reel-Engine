@@ -1,16 +1,15 @@
 const config = require("../config/config");
 const renderService = require("../services/renderService");
+const queueService = require("../services/queueService");
 
 exports.render = async (req, res) => {
 
     console.log("======================================");
-console.log("[RENDER API CALLED]");
-console.log("Job ID :", req.body.id);
-console.log("Time   :", new Date().toISOString());
-console.log("======================================");
+    console.log("[RENDER API CALLED]");
+    console.log("Job ID :", req.body.id);
+    console.log("Time   :", new Date().toISOString());
+    console.log("======================================");
 
-    console.log("RENDER ROUTE HIT");
-    console.log(req.body);
     const result = await renderService.start(req.body);
 
     res.json({
@@ -21,19 +20,62 @@ console.log("======================================");
 
 };
 
-exports.complete = (req, res) => {
+exports.complete = async (req, res) => {
 
-    renderService.clear();
+    const id = req.body.id;
+
+    if (!id) {
+
+        return res.status(400).json({
+            success: false,
+            message: "Job ID is required"
+        });
+
+    }
+
+    const success = await queueService.completeJob(id);
 
     console.log("======================================");
     console.log("[RENDER COMPLETE]");
-    console.log("Current Job Cleared");
-    console.log("Time :", new Date().toISOString());
+    console.log("Job ID :", id);
+    console.log("Time   :", new Date().toISOString());
     console.log("======================================");
 
     res.json({
-        success: true,
-        message: "Current Job Cleared"
+        success,
+        message: success
+            ? "Job Completed"
+            : "Job Not Found"
+    });
+
+};
+
+exports.fail = async (req, res) => {
+
+    const id = req.body.id;
+
+    if (!id) {
+
+        return res.status(400).json({
+            success: false,
+            message: "Job ID is required"
+        });
+
+    }
+
+    const success = await queueService.failJob(id);
+
+    console.log("======================================");
+    console.log("[RENDER FAILED]");
+    console.log("Job ID :", id);
+    console.log("Time   :", new Date().toISOString());
+    console.log("======================================");
+
+    res.json({
+        success,
+        message: success
+            ? "Job Failed"
+            : "Job Not Found"
     });
 
 };
