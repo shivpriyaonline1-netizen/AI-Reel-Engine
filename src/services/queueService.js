@@ -23,10 +23,10 @@ exports.addJob = async (job) => {
 
     await ensureFolders();
 
-    const pending = path.join(PENDING, `${job.id}.json`);
-    const processing = path.join(PROCESSING, `${job.id}.json`);
-    const completed = path.join(COMPLETED, `${job.id}.json`);
-    const failed = path.join(FAILED, `${job.id}.json`);
+    const pending = path.join(PENDING, `${job.queue_id}.json`);
+    const processing = path.join(PROCESSING, `${job.queue_id}.json`);
+    const completed = path.join(COMPLETED, `${job.queue_id}.json`);
+    const failed = path.join(FAILED, `${job.queue_id}.json`);
 
     if (
         await fs.pathExists(pending) ||
@@ -34,7 +34,7 @@ exports.addJob = async (job) => {
         await fs.pathExists(completed)
     ) {
 
-        console.log("[QUEUE] Duplicate Skipped :", job.id);
+        console.log("[QUEUE] Duplicate Skipped :", job.queue_id);
 
         return false;
 
@@ -48,7 +48,7 @@ exports.addJob = async (job) => {
         }
     );
 
-    console.log("[QUEUE] Added :", job.id);
+    console.log("[QUEUE] Added :", job.queue_id);
 
     return true;
 
@@ -77,51 +77,53 @@ exports.nextJob = async () => {
 
     const job = await fs.readJson(destination);
 
-    console.log("[QUEUE] Started :", job.id);
+    console.log("[QUEUE] Started");
+    console.log("Queue ID :", job.queue_id);
+    console.log("Post ID  :", job.post_id);
 
     return job;
 
 };
 
-exports.completeJob = async (id) => {
+exports.completeJob = async (queueId) => {
 
     await ensureFolders();
 
-    const source = path.join(PROCESSING, `${id}.json`);
+    const source = path.join(PROCESSING, `${queueId}.json`);
 
     if (!(await fs.pathExists(source))) {
         return false;
     }
 
-    const destination = path.join(COMPLETED, `${id}.json`);
+    const destination = path.join(COMPLETED, `${queueId}.json`);
 
     await fs.move(source, destination, {
         overwrite: true
     });
 
-    console.log("[QUEUE] Completed :", id);
+    console.log("[QUEUE] Completed :", queueId);
 
     return true;
 
 };
 
-exports.failJob = async (id) => {
+exports.failJob = async (queueId) => {
 
     await ensureFolders();
 
-    const source = path.join(PROCESSING, `${id}.json`);
+    const source = path.join(PROCESSING, `${queueId}.json`);
 
     if (!(await fs.pathExists(source))) {
         return false;
     }
 
-    const destination = path.join(FAILED, `${id}.json`);
+    const destination = path.join(FAILED, `${queueId}.json`);
 
     await fs.move(source, destination, {
         overwrite: true
     });
 
-    console.log("[QUEUE] Failed :", id);
+    console.log("[QUEUE] Failed :", queueId);
 
     return true;
 

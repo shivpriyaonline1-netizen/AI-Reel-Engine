@@ -11,18 +11,19 @@ exports.start = async (data) => {
 
     console.log("======================================");
     console.log("[ENGINE] QUEUE ADD");
-    console.log("Job ID :", data.id);
-    console.log("Time   :", new Date().toISOString());
+    console.log("Queue ID :", data.queue_id);
+    console.log("Post ID  :", data.post_id);
+    console.log("Time      :", new Date().toISOString());
     console.log("======================================");
 
     const pendingFile = path.join(
         PENDING,
-        `${data.id}.json`
+        `${data.queue_id}.json`
     );
 
     const processingFile = path.join(
         PROCESSING,
-        `${data.id}.json`
+        `${data.queue_id}.json`
     );
 
     if (
@@ -30,11 +31,12 @@ exports.start = async (data) => {
         await fs.pathExists(processingFile)
     ) {
 
-        console.log("[ENGINE] Duplicate Job :", data.id);
+        console.log("[ENGINE] Duplicate Queue :", data.queue_id);
 
         return {
             success: true,
-            job: data.id,
+            queue_id: data.queue_id,
+            post_id: data.post_id,
             message: "Job Already Exists"
         };
 
@@ -44,7 +46,8 @@ exports.start = async (data) => {
 
     return {
         success: true,
-        job: data.id,
+        queue_id: data.queue_id,
+        post_id: data.post_id,
         message: "Job Queued Successfully"
     };
 
