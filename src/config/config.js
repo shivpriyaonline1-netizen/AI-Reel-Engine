@@ -1,3 +1,5 @@
+console.log("WP_API_KEY =", process.env.WP_API_KEY);
+
 module.exports = {
 
     appName: "AI Reel Engine",
