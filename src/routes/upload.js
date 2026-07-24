@@ -62,7 +62,11 @@ router.post("/upload-video", upload.single("video"), async (req, res) => {
 
         const form = new FormData();
 
-        form.append("post_id", req.body.jobId);
+        console.log("Queue ID :", req.body.queueId);
+console.log("Post ID  :", req.body.jobId);
+
+        form.append("queue_id", req.body.queueId);
+form.append("post_id", req.body.jobId);
 
         form.append(
             "video",
