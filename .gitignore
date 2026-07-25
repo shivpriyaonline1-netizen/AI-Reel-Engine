@@ -1,17 +1,2 @@
 node_modules/
 logs/
-# Storage
-storage/
-
-# Queue
-storage/queue/
-storage/queue/pending/
-storage/queue/processing/
-storage/queue/completed/
-storage/queue/failed/
-
-# Output
-storage/output/
-
-# Temp
-storage/temp/
