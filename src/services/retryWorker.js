@@ -11,17 +11,9 @@ exports.start = async (queueId) => {
     await fs.ensureDir(FAILED);
     await fs.ensureDir(PENDING);
 
-    const failed = path.join(
-        FAILED,
-        `${queueId}.json`
-    );
+    const failedFile = path.join(FAILED, `${queueId}.json`);
 
-    const pending = path.join(
-        PENDING,
-        `${queueId}.json`
-    );
-
-    if (!(await fs.pathExists(failed))) {
+    if (!(await fs.pathExists(failedFile))) {
 
         return {
             success: false,
@@ -30,13 +22,11 @@ exports.start = async (queueId) => {
 
     }
 
-    await fs.move(
-        failed,
-        pending,
-        {
-            overwrite: true
-        }
-    );
+    const pendingFile = path.join(PENDING, `${queueId}.json`);
+
+    await fs.move(failedFile, pendingFile, {
+        overwrite: true
+    });
 
     return {
         success: true,

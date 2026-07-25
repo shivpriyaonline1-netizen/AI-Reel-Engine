@@ -34,51 +34,42 @@ async function count(dir) {
 
 async function loadStatus() {
 
+    const defaults = {
+
+        engine: {
+            status: "Running"
+        },
+
+        renderer: {
+            online: false,
+            lastSeen: null
+        },
+
+        currentJob: {
+            queue_id: null,
+            post_id: null,
+            title: null,
+            stage: "Idle",
+            progress: 0,
+            startedAt: null
+        }
+
+    };
+
     try {
 
         if (!(await fs.pathExists(STATUS_FILE))) {
-
-            return {
-                engine: {
-                    status: "Running"
-                },
-                renderer: {
-                    online: false,
-                    lastSeen: null
-                },
-                currentJob: {
-                    queue_id: null,
-                    post_id: null,
-                    title: null,
-                    stage: "Idle",
-                    progress: 0,
-                    startedAt: null
-                }
-            };
-
+            return defaults;
         }
 
-        return await fs.readJson(STATUS_FILE);
+        return {
+            ...defaults,
+            ...(await fs.readJson(STATUS_FILE))
+        };
 
     } catch {
 
-        return {
-            engine: {
-                status: "Running"
-            },
-            renderer: {
-                online: false,
-                lastSeen: null
-            },
-            currentJob: {
-                queue_id: null,
-                post_id: null,
-                title: null,
-                stage: "Idle",
-                progress: 0,
-                startedAt: null
-            }
-        };
+        return defaults;
 
     }
 
@@ -95,20 +86,18 @@ router.get("/dashboard", async (req, res) => {
 
     res.json({
 
+        success: true,
+
         pending,
         processing,
         completed,
         failed,
 
-        engine: status.engine.status,
-
         queue: pending + processing,
 
-        renderers: status.renderer.online ? 1 : 0,
+        engine: status.engine.status,
 
-        renderer_status: status.renderer.online ? "Online" : "Offline",
-
-        heartbeat: status.renderer.lastSeen,
+        renderer: status.renderer,
 
         currentJob: status.currentJob
 
@@ -136,21 +125,18 @@ router.post("/dashboard/job", async (req, res) => {
         await fs.writeJson(
             STATUS_FILE,
             status,
-            {
-                spaces: 4
-            }
+            { spaces: 4 }
         );
 
-        res.json({
+        return res.json({
             success: true
         });
 
     } catch (e) {
 
-        res.status(500).json({
+        return res.status(500).json({
 
             success: false,
-
             message: e.message
 
         });

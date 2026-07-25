@@ -4,8 +4,6 @@ const router = express.Router();
 
 const contentController = require("../controllers/contentController");
 
-console.log("CONTENT ROUTES LOADED");
-
 router.get("/", contentController.get);
 
 module.exports = router;

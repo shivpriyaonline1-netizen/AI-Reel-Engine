@@ -9,12 +9,10 @@ const COMPLETED = path.join(STORAGE, "queue", "completed");
 const FAILED = path.join(STORAGE, "queue", "failed");
 
 async function ensureFolders() {
-
     await fs.ensureDir(PENDING);
     await fs.ensureDir(PROCESSING);
     await fs.ensureDir(COMPLETED);
     await fs.ensureDir(FAILED);
-
 }
 
 exports.init = ensureFolders;
@@ -29,30 +27,20 @@ exports.addJob = async (job) => {
     const failed = path.join(FAILED, `${job.queue_id}.json`);
 
     if (
-    await fs.pathExists(pending) ||
-    await fs.pathExists(processing) ||
-    await fs.pathExists(completed) ||
-    await fs.pathExists(failed)
-) {
-
+        await fs.pathExists(pending) ||
+        await fs.pathExists(processing) ||
+        await fs.pathExists(completed) ||
+        await fs.pathExists(failed)
+    ) {
         console.log("[QUEUE] Duplicate Skipped :", job.queue_id);
-
         return false;
-
     }
 
-    await fs.writeJson(
-        pending,
-        job,
-        {
-            spaces: 2
-        }
-    );
+    await fs.writeJson(pending, job, { spaces: 2 });
 
     console.log("[QUEUE] Added :", job.queue_id);
 
     return true;
-
 };
 
 exports.nextJob = async () => {
@@ -60,8 +48,8 @@ exports.nextJob = async () => {
     await ensureFolders();
 
     const files = (await fs.readdir(PENDING))
-    .filter(file => file.endsWith(".json"))
-    .sort((a, b) => parseInt(a) - parseInt(b));
+        .filter(file => file.endsWith(".json"))
+        .sort((a, b) => parseInt(a) - parseInt(b));
 
     if (files.length === 0) {
         return null;
@@ -78,12 +66,12 @@ exports.nextJob = async () => {
 
     const job = await fs.readJson(destination);
 
+    console.log("[QUEUE] nextJob() called");
     console.log("[QUEUE] Started");
     console.log("Queue ID :", job.queue_id);
     console.log("Post ID  :", job.post_id);
 
     return job;
-
 };
 
 exports.completeJob = async (queueId) => {
@@ -105,7 +93,6 @@ exports.completeJob = async (queueId) => {
     console.log("[QUEUE] Completed :", queueId);
 
     return true;
-
 };
 
 exports.failJob = async (queueId) => {
@@ -127,5 +114,4 @@ exports.failJob = async (queueId) => {
     console.log("[QUEUE] Failed :", queueId);
 
     return true;
-
 };

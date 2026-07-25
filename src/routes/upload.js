@@ -7,17 +7,11 @@ const FormData = require("form-data");
 
 const config = require("../config/config");
 
-console.log("✅ Upload Route Loaded");
-
 const router = express.Router();
 
 const uploadDir = path.join(__dirname, "../../public/videos");
 
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, {
-        recursive: true
-    });
-}
+fs.mkdirSync(uploadDir, { recursive: true });
 
 const storage = multer.diskStorage({
 
@@ -26,8 +20,10 @@ const storage = multer.diskStorage({
     },
 
     filename(req, file, cb) {
-    cb(null, `${req.body.queueId}.mp4`);
-}
+
+        cb(null, `${req.body.queue_id}.mp4`);
+
+    }
 
 });
 
@@ -35,7 +31,7 @@ const upload = multer({ storage });
 
 router.get("/upload-video", (req, res) => {
 
-    res.json({
+    return res.json({
         success: true,
         message: "Upload Route Working"
     });
@@ -45,11 +41,6 @@ router.get("/upload-video", (req, res) => {
 router.post("/upload-video", upload.single("video"), async (req, res) => {
 
     try {
-
-        console.log("====================================");
-        console.log("[UPLOAD]");
-        console.log("Job ID :", req.body.jobId);
-        console.log("====================================");
 
         if (!req.file) {
 
@@ -62,11 +53,8 @@ router.post("/upload-video", upload.single("video"), async (req, res) => {
 
         const form = new FormData();
 
-        console.log("Queue ID :", req.body.queueId);
-console.log("Post ID  :", req.body.jobId);
-
-        form.append("queue_id", req.body.queueId);
-form.append("post_id", req.body.jobId);
+        form.append("queue_id", req.body.queue_id);
+        form.append("post_id", req.body.post_id);
 
         form.append(
             "video",
@@ -74,7 +62,7 @@ form.append("post_id", req.body.jobId);
             req.file.filename
         );
 
-        const wp = await axios.post(
+        const response = await axios.post(
 
             config.wp.upload,
 
@@ -97,22 +85,16 @@ form.append("post_id", req.body.jobId);
 
         );
 
-        console.log("✅ WordPress Upload Complete");
-
-        return res.json(wp.data);
+        return res.json(response.data);
 
     } catch (error) {
 
         console.error("[UPLOAD ERROR]");
 
         if (error.response) {
-
             console.error(error.response.data);
-
         } else {
-
             console.error(error.message);
-
         }
 
         return res.status(500).json({

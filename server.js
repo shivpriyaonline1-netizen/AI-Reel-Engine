@@ -8,7 +8,6 @@ const uploadRoute = require("./src/routes/upload");
 const routes = require("./src/routes");
 
 const queueService = require("./src/services/queueService");
-const wpService = require("./src/services/wpService");
 
 const app = express();
 
@@ -30,54 +29,15 @@ app.use("/", routes);
 
 const PORT = process.env.PORT || 5000;
 
-let busy = false;
-
-async function pollWordPress() {
-
-    if (busy) {
-        return;
-    }
-
-    busy = true;
-
-    try {
-
-        const response = await wpService.nextJob();
-
-        if (response && response.success && response.job) {
-
-            await queueService.addJob(response.job);
-
-            console.log("[ENGINE] Job Synced");
-console.log("Queue ID :", response.job.queue_id);
-console.log("Post ID  :", response.job.post_id);
-
-        }
-
-    } catch (err) {
-
-        console.log("[WP]", err.message);
-
-    } finally {
-
-        busy = false;
-
-    }
-
-}
-
 app.listen(PORT, async () => {
 
     await queueService.init();
 
     console.log("====================================");
-    console.log(" AI Reel Generator Engine");
-    console.log(" Status : Running");
+    console.log(" AI Reel Engine");
+    console.log(" Status :", "Running");
     console.log(" Port   :", PORT);
-    console.log(" Storage:", process.env.ARG_STORAGE || "C:\\AI-Reel-Storage");
+    console.log(" Storage:", process.env.ARG_STORAGE);
     console.log("====================================");
 
-    await pollWordPress();
-
-setInterval(pollWordPress, 5000);
 });

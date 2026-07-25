@@ -7,26 +7,25 @@ class WPService {
 
         try {
 
-            const response = await axios.get(
+            const { data } = await axios.get(
                 `${config.wp.api}/render/next`
             );
 
-            return response.data;
+            return data;
 
         } catch (error) {
 
-            if (error.response) {
-
-                console.error("[WP]", error.response.status, error.response.data);
-
-            } else {
-
-                console.error("[WP]", error.message);
-
+            if (error.response && error.response.status === 404) {
+                return null;
             }
 
-            return null;
+            console.error(
+                "[WP]",
+                error.response?.status || "",
+                error.response?.data || error.message
+            );
 
+            return null;
         }
 
     }

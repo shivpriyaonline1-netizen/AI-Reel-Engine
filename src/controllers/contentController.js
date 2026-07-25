@@ -2,9 +2,9 @@ const renderService = require("../services/renderService");
 
 exports.get = async (req, res) => {
 
-    const content = await renderService.get();
+    const job = await renderService.get();
 
-    if (!content) {
+    if (!job) {
 
         return res.status(404).json({
             success: false,
@@ -13,6 +13,9 @@ exports.get = async (req, res) => {
 
     }
 
-    res.json(content);
+    return res.json({
+        success: true,
+        job
+    });
 
 };

@@ -1,5 +1,3 @@
-console.log("WP_API_KEY =", process.env.WP_API_KEY);
-
 module.exports = {
 
     appName: "AI Reel Engine",
@@ -13,16 +11,25 @@ module.exports = {
     storage: process.env.ARG_STORAGE || "C:\\AI-Reel-Storage",
 
     wp: {
+
         api: process.env.WP_API || "https://shivpriyaonline.com/wp-json/arg/v1",
+
         upload: process.env.WP_UPLOAD || "https://shivpriyaonline.com/wp-json/arg/v1/upload",
+
         apiKey: process.env.WP_API_KEY || ""
+
     },
 
     queue: {
+
         pending: "queue/pending",
+
         processing: "queue/processing",
+
         completed: "queue/completed",
+
         failed: "queue/failed"
+
     }
 
 };

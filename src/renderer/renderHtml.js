@@ -12,12 +12,17 @@ exports.build = (job) => {
 
     html = html.replace(
         '<div id="title"></div>',
-        `<div id="title">${job.title}</div>`
+        `<div id="title">${job.title || ""}</div>`
     );
+
+    const organization =
+        job.overview?.Organization ||
+        job.overview?.organization ||
+        "";
 
     html = html.replace(
         '<div id="subtitle"></div>',
-        `<div id="subtitle">${job.overview.organization}</div>`
+        `<div id="subtitle">${organization}</div>`
     );
 
     return html;
