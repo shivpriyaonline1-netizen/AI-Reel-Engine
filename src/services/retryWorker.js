@@ -1,31 +1,27 @@
-const fs = require("fs");
+const fs = require("fs-extra");
 const path = require("path");
 
-exports.start = (jobId) => {
+const STORAGE = process.env.ARG_STORAGE || "C:\\AI-Reel-Storage";
 
-    const failedDir = path.join(
-        process.cwd(),
-        "queue",
-        "failed"
-    );
+const FAILED = path.join(STORAGE, "queue", "failed");
+const PENDING = path.join(STORAGE, "queue", "pending");
 
-    const pendingDir = path.join(
-        process.cwd(),
-        "queue",
-        "pending"
-    );
+exports.start = async (queueId) => {
+
+    await fs.ensureDir(FAILED);
+    await fs.ensureDir(PENDING);
 
     const failed = path.join(
-        failedDir,
-        `${jobId}.json`
+        FAILED,
+        `${queueId}.json`
     );
 
     const pending = path.join(
-        pendingDir,
-        `${jobId}.json`
+        PENDING,
+        `${queueId}.json`
     );
 
-    if (!fs.existsSync(failed)) {
+    if (!(await fs.pathExists(failed))) {
 
         return {
             success: false,
@@ -34,21 +30,17 @@ exports.start = (jobId) => {
 
     }
 
-    if (!fs.existsSync(pendingDir)) {
-
-        fs.mkdirSync(pendingDir, {
-            recursive: true
-        });
-
-    }
-
-    fs.renameSync(
+    await fs.move(
         failed,
-        pending
+        pending,
+        {
+            overwrite: true
+        }
     );
 
     return {
         success: true,
+        queue_id: queueId,
         message: "Retry Queued"
     };
 

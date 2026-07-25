@@ -6,8 +6,9 @@ exports.render = async (req, res) => {
 
     console.log("======================================");
     console.log("[RENDER API CALLED]");
-    console.log("Job ID :", req.body.id);
-    console.log("Time   :", new Date().toISOString());
+    console.log("Queue ID :", req.body.queue_id);
+    console.log("Post ID  :", req.body.post_id);
+    console.log("Time     :", new Date().toISOString());
     console.log("======================================");
 
     const result = await renderService.start(req.body);
@@ -22,23 +23,23 @@ exports.render = async (req, res) => {
 
 exports.complete = async (req, res) => {
 
-    const id = req.body.id;
+    const queueId = req.body.queue_id;
 
-    if (!id) {
+    if (!queueId) {
 
         return res.status(400).json({
             success: false,
-            message: "Job ID is required"
+            message: "Queue ID is required"
         });
 
     }
 
-    const success = await queueService.completeJob(id);
+    const success = await queueService.completeJob(queueId);
 
     console.log("======================================");
     console.log("[RENDER COMPLETE]");
-    console.log("Job ID :", id);
-    console.log("Time   :", new Date().toISOString());
+    console.log("Queue ID :", queueId);
+    console.log("Time     :", new Date().toISOString());
     console.log("======================================");
 
     res.json({
@@ -52,23 +53,23 @@ exports.complete = async (req, res) => {
 
 exports.fail = async (req, res) => {
 
-    const id = req.body.id;
+    const queueId = req.body.queue_id;
 
-    if (!id) {
+    if (!queueId) {
 
         return res.status(400).json({
             success: false,
-            message: "Job ID is required"
+            message: "Queue ID is required"
         });
 
     }
 
-    const success = await queueService.failJob(id);
+    const success = await queueService.failJob(queueId);
 
     console.log("======================================");
     console.log("[RENDER FAILED]");
-    console.log("Job ID :", id);
-    console.log("Time   :", new Date().toISOString());
+    console.log("Queue ID :", queueId);
+    console.log("Time     :", new Date().toISOString());
     console.log("======================================");
 
     res.json({

@@ -26,8 +26,8 @@ const storage = multer.diskStorage({
     },
 
     filename(req, file, cb) {
-        cb(null, `${req.body.jobId}.mp4`);
-    }
+    cb(null, `${req.body.queueId}.mp4`);
+}
 
 });
 

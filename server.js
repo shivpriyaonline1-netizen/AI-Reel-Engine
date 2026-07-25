@@ -48,7 +48,9 @@ async function pollWordPress() {
 
             await queueService.addJob(response.job);
 
-            console.log("[ENGINE] Job Synced :", response.job.id);
+            console.log("[ENGINE] Job Synced");
+console.log("Queue ID :", response.job.queue_id);
+console.log("Post ID  :", response.job.post_id);
 
         }
 

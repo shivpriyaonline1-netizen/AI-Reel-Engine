@@ -29,10 +29,11 @@ exports.addJob = async (job) => {
     const failed = path.join(FAILED, `${job.queue_id}.json`);
 
     if (
-        await fs.pathExists(pending) ||
-        await fs.pathExists(processing) ||
-        await fs.pathExists(completed)
-    ) {
+    await fs.pathExists(pending) ||
+    await fs.pathExists(processing) ||
+    await fs.pathExists(completed) ||
+    await fs.pathExists(failed)
+) {
 
         console.log("[QUEUE] Duplicate Skipped :", job.queue_id);
 
@@ -59,8 +60,8 @@ exports.nextJob = async () => {
     await ensureFolders();
 
     const files = (await fs.readdir(PENDING))
-        .filter(file => file.endsWith(".json"))
-        .sort();
+    .filter(file => file.endsWith(".json"))
+    .sort((a, b) => parseInt(a) - parseInt(b));
 
     if (files.length === 0) {
         return null;

@@ -47,7 +47,8 @@ async function loadStatus() {
                     lastSeen: null
                 },
                 currentJob: {
-                    id: null,
+                    queue_id: null,
+                    post_id: null,
                     title: null,
                     stage: "Idle",
                     progress: 0,
@@ -70,7 +71,8 @@ async function loadStatus() {
                 lastSeen: null
             },
             currentJob: {
-                id: null,
+                queue_id: null,
+                post_id: null,
                 title: null,
                 stage: "Idle",
                 progress: 0,
@@ -122,7 +124,8 @@ router.post("/dashboard/job", async (req, res) => {
 
         status.currentJob = {
 
-            id: req.body.id ?? null,
+            queue_id: req.body.queue_id ?? null,
+            post_id: req.body.post_id ?? null,
             title: req.body.title ?? null,
             stage: req.body.stage ?? "Idle",
             progress: req.body.progress ?? 0,
