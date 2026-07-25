@@ -2,20 +2,31 @@ const renderService = require("../services/renderService");
 
 exports.get = async (req, res) => {
 
-    const job = await renderService.get();
+    try {
 
-    if (!job) {
+        const job = await renderService.get();
 
-        return res.status(404).json({
+        if (!job) {
+
+            return res.json({
+                success: false,
+                message: "No Pending Job"
+            });
+
+        }
+
+        return res.json({
+            success: true,
+            job
+        });
+
+    } catch (err) {
+
+        return res.json({
             success: false,
-            message: "No Pending Job"
+            message: err.message
         });
 
     }
-
-    return res.json({
-        success: true,
-        job
-    });
 
 };
