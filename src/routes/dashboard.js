@@ -86,6 +86,45 @@ router.get("/dashboard", async (req, res) => {
 
     res.json({
 
+        const jobs = [];
+
+for (const dir of [
+    PROCESSING,
+    PENDING,
+    COMPLETED,
+    FAILED
+]) {
+
+    try {
+
+        const files = (await fs.readdir(dir))
+            .filter(file => file.endsWith(".json"))
+            .sort()
+            .reverse()
+            .slice(0, 20);
+
+        for (const file of files) {
+
+            const data = await fs.readJson(
+                path.join(dir, file)
+            );
+
+            jobs.push({
+
+                queue_id: data.queue_id || "-",
+                post_id: data.post_id || "-",
+                status: data.status || path.basename(dir),
+                progress: data.progress || 0,
+                startedAt: data.startedAt || "-"
+
+            });
+
+        }
+
+    } catch {}
+
+}
+
     success: true,
 
     pending,
@@ -108,6 +147,8 @@ router.get("/dashboard", async (req, res) => {
     renderer: status.renderer,
 
     currentJob: status.currentJob
+
+    jobs
 
 });
 
