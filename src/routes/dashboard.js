@@ -118,9 +118,7 @@ router.get("/dashboard", async (req, res) => {
 
 }
 
-const failedJobs = await getJobs(FAILED);
-
-const stuckJobs = await getJobs(PROCESSING);
+const failedJobs = await getJobs(FAILED);   
 
     res.json({
 
@@ -147,9 +145,7 @@ const stuckJobs = await getJobs(PROCESSING);
 
     currentJob: status.currentJob,
 
-    failedJobs,
-
-    stuckJobs
+    failedJobs
 
 });
 

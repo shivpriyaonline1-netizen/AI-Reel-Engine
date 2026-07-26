@@ -66,6 +66,12 @@ exports.nextJob = async () => {
 
     const job = await fs.readJson(destination);
 
+    job.startedAt = new Date().toISOString();
+
+await fs.writeJson(destination, job, {
+    spaces: 2
+});
+
     console.log("[QUEUE] nextJob() called");
     console.log("[QUEUE] Started");
     console.log("Queue ID :", job.queue_id);
@@ -133,28 +139,6 @@ exports.retryFailedJob = async (queueId) => {
     });
 
     console.log("[QUEUE] Retry Failed :", queueId);
-
-    return true;
-
-};
-
-exports.retryStuckJob = async (queueId) => {
-
-    await ensureFolders();
-
-    const source = path.join(PROCESSING, `${queueId}.json`);
-
-    if (!(await fs.pathExists(source))) {
-        return false;
-    }
-
-    const destination = path.join(PENDING, `${queueId}.json`);
-
-    await fs.move(source, destination, {
-        overwrite: true
-    });
-
-    console.log("[QUEUE] Retry Stuck :", queueId);
 
     return true;
 

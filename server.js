@@ -8,6 +8,7 @@ const uploadRoute = require("./src/routes/upload");
 const routes = require("./src/routes");
 
 const queueService = require("./src/services/queueService");
+const timeoutService = require("./src/services/timeoutService");
 
 const app = express();
 
@@ -32,6 +33,8 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
 
     await queueService.init();
+
+    timeoutService.start();
 
     console.log("====================================");
     console.log(" AI Reel Engine");

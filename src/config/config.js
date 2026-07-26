@@ -30,6 +30,14 @@ module.exports = {
 
         failed: "queue/failed"
 
-    }
+    },
+
+    timeout: {
+
+    render: 10 * 60 * 1000,
+
+    checkInterval: 30 * 1000
+
+}
 
 };

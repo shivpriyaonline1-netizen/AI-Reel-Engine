@@ -23,7 +23,6 @@ router.post("/render/fail", renderController.fail);
 
 router.post("/render/retry-failed", renderController.retryFailed);
 
-router.post("/render/retry-stuck", renderController.retryStuck);
 
 // Queue API
 router.use("/content", contentRoutes);
