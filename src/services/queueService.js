@@ -7,6 +7,7 @@ const PENDING = path.join(STORAGE, "queue", "pending");
 const PROCESSING = path.join(STORAGE, "queue", "processing");
 const COMPLETED = path.join(STORAGE, "queue", "completed");
 const FAILED = path.join(STORAGE, "queue", "failed");
+const STATUS_FILE = path.join(STORAGE, "status.json");
 
 async function ensureFolders() {
     await fs.ensureDir(PENDING);
@@ -43,6 +44,42 @@ exports.addJob = async (job) => {
     return true;
 };
 
+async function addHistory(job, status) {
+
+    let dashboard = {};
+
+    if (await fs.pathExists(STATUS_FILE)) {
+
+        dashboard = await fs.readJson(STATUS_FILE);
+
+    }
+
+    if (!Array.isArray(dashboard.history)) {
+        dashboard.history = [];
+    }
+
+    dashboard.history.unshift({
+
+        queue_id: job.queue_id,
+        post_id: job.post_id,
+        title: job.title || "",
+        status,
+        progress: job.progress || 100,
+        startedAt: job.startedAt || null,
+        completedAt: new Date().toISOString()
+
+    });
+
+    dashboard.history = dashboard.history.slice(0, 20);
+
+    await fs.writeJson(
+        STATUS_FILE,
+        dashboard,
+        { spaces: 4 }
+    );
+
+}
+
 exports.nextJob = async () => {
 
     await ensureFolders();
@@ -61,17 +98,16 @@ exports.nextJob = async () => {
     const destination = path.join(PROCESSING, file);
 
     await fs.move(source, destination, {
-        overwrite: true
-    });
+    overwrite: true
+});
 
-    const job = await fs.readJson(destination);
+const job = await fs.readJson(destination);
 
-    console.log("[QUEUE] nextJob() called");
-    console.log("[QUEUE] Started");
-    console.log("Queue ID :", job.queue_id);
-    console.log("Post ID  :", job.post_id);
+await addHistory(job, "Completed");
 
-    return job;
+console.log("[QUEUE] Completed :", queueId);
+
+return true;
 };
 
 exports.completeJob = async (queueId) => {
