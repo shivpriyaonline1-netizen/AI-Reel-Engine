@@ -56,6 +56,8 @@ async function loadStatus() {
 
     };
 
+    history: []
+
     try {
 
         if (!(await fs.pathExists(STATUS_FILE))) {
@@ -148,7 +150,7 @@ for (const dir of [
 
     currentJob: status.currentJob,
 
-    jobs
+    jobs: status.history || []
 
 });
 
