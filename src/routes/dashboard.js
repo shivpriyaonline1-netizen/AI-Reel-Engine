@@ -84,9 +84,7 @@ router.get("/dashboard", async (req, res) => {
     const completed = await count(COMPLETED);
     const failed = await count(FAILED);
 
-    res.json({
-
-        const jobs = [];
+    const jobs = [];
 
 for (const dir of [
     PROCESSING,
@@ -125,6 +123,8 @@ for (const dir of [
 
 }
 
+    res.json({
+
     success: true,
 
     pending,
@@ -146,7 +146,7 @@ for (const dir of [
 
     renderer: status.renderer,
 
-    currentJob: status.currentJob
+    currentJob: status.currentJob,
 
     jobs
 
