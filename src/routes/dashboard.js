@@ -86,22 +86,30 @@ router.get("/dashboard", async (req, res) => {
 
     res.json({
 
-        success: true,
+    success: true,
 
-        pending,
-        processing,
-        completed,
+    pending,
+    processing,
+    completed,
+    failed,
+
+    total:
+        pending +
+        processing +
+        completed +
         failed,
 
-        queue: pending + processing,
+    queue:
+        pending +
+        processing,
 
-        engine: status.engine.status,
+    engine: status.engine.status,
 
-        renderer: status.renderer,
+    renderer: status.renderer,
 
-        currentJob: status.currentJob
+    currentJob: status.currentJob
 
-    });
+});
 
 });
 
