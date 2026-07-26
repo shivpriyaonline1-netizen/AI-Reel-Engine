@@ -66,6 +66,7 @@ exports.nextJob = async () => {
 
     const job = await fs.readJson(destination);
 
+    job.status = "processing";
     job.startedAt = new Date().toISOString();
 
 await fs.writeJson(destination, job, {
