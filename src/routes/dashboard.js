@@ -56,8 +56,6 @@ async function loadStatus() {
 
     };
 
-    history: []
-
     try {
 
         if (!(await fs.pathExists(STATUS_FILE))) {
@@ -86,36 +84,29 @@ router.get("/dashboard", async (req, res) => {
     const completed = await count(COMPLETED);
     const failed = await count(FAILED);
 
-    const jobs = [];
+    async function getJobs(folder) {
 
-for (const dir of [
-    PROCESSING,
-    PENDING,
-    COMPLETED,
-    FAILED
-]) {
+    const jobs = [];
 
     try {
 
-        const files = (await fs.readdir(dir))
+        const files = (await fs.readdir(folder))
             .filter(file => file.endsWith(".json"))
-            .sort()
-            .reverse()
-            .slice(0, 20);
+            .sort();
 
         for (const file of files) {
 
-            const data = await fs.readJson(
-                path.join(dir, file)
+            const job = await fs.readJson(
+                path.join(folder, file)
             );
 
             jobs.push({
 
-                queue_id: data.queue_id || "-",
-                post_id: data.post_id || "-",
-                status: data.status || path.basename(dir),
-                progress: data.progress || 0,
-                startedAt: data.startedAt || "-"
+                queue_id: job.queue_id,
+                post_id: job.post_id,
+                title: job.title || "",
+                stage: job.stage || "",
+                progress: job.progress || 0
 
             });
 
@@ -123,7 +114,13 @@ for (const dir of [
 
     } catch {}
 
+    return jobs;
+
 }
+
+const failedJobs = await getJobs(FAILED);
+
+const stuckJobs = await getJobs(PROCESSING);
 
     res.json({
 
@@ -150,7 +147,9 @@ for (const dir of [
 
     currentJob: status.currentJob,
 
-    jobs: status.history || []
+    failedJobs,
+
+    stuckJobs
 
 });
 
@@ -170,6 +169,42 @@ router.post("/dashboard/job", async (req, res) => {
             stage: req.body.stage ?? "Idle",
             progress: req.body.progress ?? 0,
             startedAt: req.body.startedAt ?? null
+
+        };
+
+        await fs.writeJson(
+            STATUS_FILE,
+            status,
+            { spaces: 4 }
+        );
+
+        return res.json({
+            success: true
+        });
+
+    } catch (e) {
+
+        return res.status(500).json({
+
+            success: false,
+            message: e.message
+
+        });
+
+    }
+
+});
+
+router.post("/dashboard/renderer", async (req, res) => {
+
+    try {
+
+        const status = await loadStatus();
+
+        status.renderer = {
+
+            online: true,
+            lastSeen: new Date().toISOString()
 
         };
 
