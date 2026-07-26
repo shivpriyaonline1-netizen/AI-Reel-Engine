@@ -98,16 +98,17 @@ exports.nextJob = async () => {
     const destination = path.join(PROCESSING, file);
 
     await fs.move(source, destination, {
-    overwrite: true
-});
+        overwrite: true
+    });
 
-const job = await fs.readJson(destination);
+    const job = await fs.readJson(destination);
 
-await addHistory(job, "Completed");
+    console.log("[QUEUE] nextJob() called");
+    console.log("[QUEUE] Started");
+    console.log("Queue ID :", job.queue_id);
+    console.log("Post ID  :", job.post_id);
 
-console.log("[QUEUE] Completed :", queueId);
-
-return true;
+    return job;
 };
 
 exports.completeJob = async (queueId) => {
