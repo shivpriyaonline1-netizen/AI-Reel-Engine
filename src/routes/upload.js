@@ -89,22 +89,24 @@ router.post("/upload-video", upload.single("video"), async (req, res) => {
 
     } catch (error) {
 
-        console.error("[UPLOAD ERROR]");
+    console.error("[UPLOAD ERROR]");
 
-        if (error.response) {
-            console.error(error.response.data);
-        } else {
-            console.error(error.message);
-        }
-
-        return res.status(500).json({
-
-            success: false,
-            message: "Upload Failed"
-
-        });
-
+    if (error.response) {
+        console.error(error.response.data);
+    } else {
+        console.error(error.message);
     }
+
+    return res.status(500).json({
+
+        success: false,
+        message: error.response
+            ? JSON.stringify(error.response.data)
+            : error.message
+
+    });
+
+}
 
 });
 
